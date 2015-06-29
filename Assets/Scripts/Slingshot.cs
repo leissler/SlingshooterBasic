@@ -5,6 +5,7 @@ public class Slingshot : MonoBehaviour {
 
 	// Fields seen in the Inspector panel
 	public GameObject prefabProjectile;
+	public float shotMult = 4.0f;
 
 	// Internal variable
 	private GameObject launchPoint;
@@ -64,8 +65,22 @@ public class Slingshot : MonoBehaviour {
 		// Find the difference between launchPos and mouse position
 		Vector3 mouseDelta = mousePos3D - launchPos;
 
+		float maxMagnitude = this.GetComponent<SphereCollider>().radius;
+
+		mouseDelta = Vector3.ClampMagnitude(mouseDelta, maxMagnitude);
+
 		// Move the projectile to this new position
-		projectile.transform.position = mousePos3D;
+		projectile.transform.position = launchPos + mouseDelta;
+
+		if(Input.GetMouseButtonUp(0)) {
+			aimingMode = false;
+			projectile.GetComponent<Rigidbody>().isKinematic = false;
+
+			projectile.GetComponent<Rigidbody>().velocity = -mouseDelta * shotMult;
+
+			FollowCam.S.poi = projectile;
+		
+		}
 
 	
 	}
